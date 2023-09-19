@@ -1,0 +1,59 @@
+---
+title: "PSORMD"
+author: "Thomas Cuezze"
+date: "2023-09-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+##Calculating Parameters For Simple Linear Regression Using Particle Swarm Optimization
+
+##Librarying
+library(tidyverse)
+
+##Store the data
+data <- read_csv("data.csv")
+
+##Variables and Parameters for PSO
+num_par <- 50 #number of particles
+num_iter <- 50 #number of iterations
+particles <- tibble(b0 = c(0), b1 = c(0), ss = c(0)) #creates 'particles', the tibble of all vectors representing the particles. Each row represents a vector. It's initialized with a meaningless zero just to create the columns
+sum_squares <- 0 #used to calculate error sums of squares for each particle. Initialized as a meaningless zero
+global_best <- c(0,0,0) #the global best particle, initialized to zero
+local_best <- c(0,0,0) #the local best particle, initialized to zero
+vec_move <- c(0, 0) #the movement vector, initialized to zero
+w <- 0.7 #inertia weight, a fixed parameter between 0 and 1
+c <- #acceleration coefficient, a fixed parameter between 0 and 1
+
+##Initializing the particles with random values
+
+for (i in 1:num_par){ #for loop for number of particles
+  ##Adds a vector to 'particles' with two values. The first represents B_0 and is generated from a uniform distribution between the minimum and maxium y values in the data. The second represents B_1 and is drawn from a uniform distribution between 0 and 1.
+  particles[i, 1] <- runif(n = 1, min = min(data$y), max = max(data$y))
+  particles[i, 2] <- runif(n = 1, min = 0, max = 1) 
+  for (j in 1:nrow(data)){ #for each observation in the data
+    model_estimate = particles[i, 1] + particles[i, 2]*data[j, 1] #calculate the model estimate: the intercept (b0) given in the particle, plus the slope given in the particle (b1) times the x value in the observation
+    square_error = (data[j, 2] - model_estimate)^2 #calculate the square error for that observation: the correct y value - the model estimate y value, squared
+    sum_squares = sum_squares + square_error #add this to the total sum of squares for this particle
+  }
+  particles[i, 3] <- sum_squares #store this for the particle
+  sum_squares = 0 #reset sums of squares to zero
+}
+
+##Finding the first local best
+best_row = which.min(particles$ss) #get row number of best particle (that with lowest error sums of squares)
+local_best <- c(particles[best_row,1], particles[best_row,2], particles[best_row,3]) #Set the new local best to the values of the best particle
+global_best <- local_best #Because this is the first run, the global best will always be the same as the local best
+
+##Run the swarm movement iterations
+for (i in 1:num_iter) {
+  vec_move = w*vec_move + 
+}
+
+```
